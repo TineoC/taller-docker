@@ -1,46 +1,65 @@
 services:
   frontend:
+    # build the frontend container using the Dockerfile located in the frontend directory
     build:
-      context: frontend
-      target: development
+      context: ./frontend
+    # expose the container port 3000 to the host port 3000
     ports:
-      - 3000:3000
+      - '3000:3000'
+    # create a volume between local ./frontend dir and /usr/src/app
     volumes:
       - ./frontend:/usr/src/app
-      - /usr/src/app/node_modules
-    restart: always
+    # connect frontend container with backend container
     networks:
-      - react-express
+      - public-network
+    # create dependency between frontend and backend
     depends_on:
       - backend
 
   backend:
-    restart: always
+    # build the backend container using the Dockerfile located in the backend directory
     build:
-      context: backend
-      target: development
+      context: ./backend
+    # run backend on port 3000
+    ports:
+      - '3000'
+    # create a volume between local ./backend dir and /usr/src/app
     volumes:
       - ./backend:/usr/src/app
-      - /usr/src/app/node_modules
+    # pass backend env variables
+    # add healthcheck to backend container that curls /health endpoint
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    # set dependency with mongo
     depends_on:
       - mongo
+    # connect backend container with frontend container
+    # connect backend container with mongo container
     networks:
-      - express-mongo
-      - react-express
-    ports:
-      - 3000
+      - public-network
+      - private-network
+
   mongo:
-    restart: always
+    # create a mongodb container using mongo version 4.2.0
     image: mongo:4.2.0
+    # stablish a volume called mongo_data to persist data at /data/db
     volumes:
       - mongo_data:/data/db
+    # connect mongo container with backend container
     networks:
-      - express-mongo
-    expose:
-      - 27017
-networks:
-  react-express:
-  express-mongo:
+      - private-network
+    # stablish mongo db port to 27017
+    ports:
+      - '27017'
 
+# Define networks
+networks:
+  public-network:
+  private-network:
+
+# Define volumes
 volumes:
   mongo_data:

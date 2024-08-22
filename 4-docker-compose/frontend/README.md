@@ -1,27 +1,50 @@
-#### Snippet of frontend(ReactJS)`DockerFile`
+# React + TypeScript + Vite
 
-You will find this `DockerFile` inside **frontend** directory. 
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-```bash
-# Create image based on the official Node image from dockerhub
-FROM node:10
-#Argument that is passed from docer-compose.yaml file
-ARG FRONT_END_PORT
-# Create app directory
-WORKDIR /usr/src/app
-#Echo the argument to check passed argument loaded here correctly
-RUN echo "Argument port is : $FRONT_END_PORT"
-# Copy dependency definitions
-COPY package.json /usr/src/app
-# Install dependecies
-RUN npm install
-# Get all the code needed to run the app
-COPY . /usr/src/app
-# Expose the port the app runs in
-EXPOSE ${FRONT_END_PORT}
-# Serve the app
-CMD ["npm", "start"]
+Currently, two official plugins are available:
+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+
+- Configure the top-level `parserOptions` property like this:
+
+```js
+export default tseslint.config({
+  languageOptions: {
+    // other options...
+    parserOptions: {
+      project: ['./tsconfig.node.json', './tsconfig.app.json'],
+      tsconfigRootDir: import.meta.dirname,
+    },
+  },
+})
 ```
-##### Explanation of frontend(ReactJS) `DockerFile`
 
-Frontend `DockerFile` is almost the same as Backend `DockerFile`.
+- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
+- Optionally add `...tseslint.configs.stylisticTypeChecked`
+- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+
+```js
+// eslint.config.js
+import react from 'eslint-plugin-react'
+
+export default tseslint.config({
+  // Set the react version
+  settings: { react: { version: '18.3' } },
+  plugins: {
+    // Add the react plugin
+    react,
+  },
+  rules: {
+    // other rules...
+    // Enable its recommended rules
+    ...react.configs.recommended.rules,
+    ...react.configs['jsx-runtime'].rules,
+  },
+})
+```
