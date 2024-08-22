@@ -1,0 +1,13 @@
+{
+  "name": "Node.js & MongoDB",
+  "dockerComposeFile": "compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"],
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash"
+  },
+  "postCreateCommand": "npm install",
+  "remoteUser": "node",
+  "forwardPorts": [3000, 5173]
+}
