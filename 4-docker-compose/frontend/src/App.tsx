@@ -118,8 +118,6 @@ function AddTodo(props: {
 function ListTodos(props: { toDos?: Todo[]; onDelete: (id: string) => void }) {
   const { toDos, onDelete } = props
 
-  console.log({ toDos })
-
   if (!toDos || toDos.length === 0) {
     return <p className='text-sm'>No todos yet...</p>
   }

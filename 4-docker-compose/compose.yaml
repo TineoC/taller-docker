@@ -1,19 +1,13 @@
 services:
   frontend:
-    # build the frontend container using the Dockerfile located in the frontend directory
     build:
       context: ./frontend
-    # expose the container port 3000 to the host port 3000
     ports:
       - '8080:80'
-    # connect frontend container with backend container
     networks:
       - public-network
-    # create dependency between frontend and backend
     volumes:
       - './frontend/nginx.conf:/etc/nginx/conf.d/default.conf'
-    depends_on:
-      - backend
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:80']
       interval: 30s
@@ -21,37 +15,23 @@ services:
       retries: 5
 
   backend:
-    # build the backend container using the Dockerfile located in the backend directory
     build:
       context: ./backend
-    # run backend on port 3000
     ports:
       - '3000'
     # add healthcheck to backend container that curls /health endpoint
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
-      interval: 30s
-      timeout: 10s
-      retries: 5
     # set dependency with mongo
-    depends_on:
-      - mongo
     # connect backend container with frontend container
     # connect backend container with mongo container
     networks:
       - public-network
-      - private-network
 
   mongo:
-    # create a mongodb container using mongo version 4.2.0
     image: mongo:4.2.0
-    # stablish a volume called mongo_data to persist data at /data/db
     volumes:
       - mongo_data:/data/db
-    # connect mongo container with backend container
     networks:
       - private-network
-    # stablish mongo db port to 27017
     ports:
       - '27017'
 
