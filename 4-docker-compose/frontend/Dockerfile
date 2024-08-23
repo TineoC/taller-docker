@@ -19,7 +19,6 @@ WORKDIR /usr/src/app
 # Create a stage for installing production dependecies.
 FROM base as deps
 
-
 COPY package.json package-lock.json ./
 
 # Leverage a cache mount to /root/.npm to speed up subsequent builds.

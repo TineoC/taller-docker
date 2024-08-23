@@ -19,7 +19,6 @@ services:
       context: ./backend
     ports:
       - '3000'
-    # add healthcheck to backend container that curls /health endpoint
     # set dependency with mongo
     # connect backend container with frontend container
     # connect backend container with mongo container
